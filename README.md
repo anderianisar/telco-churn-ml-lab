@@ -235,3 +235,140 @@ The final XGBoost model was evaluated on the **previously locked test set**.
 ```text
 [[936   99]
  [185  189]]
+
+# Churn Risk Advisor — Week 4
+
+A machine learning web application that predicts telecom customer churn risk using a trained XGBoost classifier. Built with Python and Streamlit, the application supports individual customer predictions, what-if analysis, and batch scoring through CSV uploads.
+
+## Project Overview
+
+Customer churn occurs when customers discontinue a service. Identifying customers who may be at risk can help telecom retention teams prioritize customers for further review.
+
+This project packages a model developed in Week 3 into a user-facing application and addresses training-serving consistency, model metadata, deployment, and responsible model use.
+
+## Features
+
+- **Single-customer prediction:** Enter customer information and estimate the probability of churn.
+- **Risk classification:** Display Low, Medium, or High risk categories.
+- **Adjustable retention threshold:** Change the probability threshold used to flag customers for attention.
+- **What-if analysis:** Compare predictions for different contract and payment-method scenarios.
+- **Batch predictions:** Upload a CSV, score multiple customers, and download the results.
+- **Model information:** Display evaluation metrics, model version, and limitations.
+- **Training-serving parity:** Use a consistent feature-preparation approach to reduce encoding mismatches.
+
+## Model and Dataset
+
+- **Dataset:** IBM Telco Customer Churn
+- **Dataset size:** 7,043 customers
+- **Model:** XGBoost classifier
+- **Input features:** 30 encoded feature columns
+- **Scikit-learn version:** 1.6.1
+- **XGBoost version:** 3.4.1
+
+## Model Performance
+
+| Metric | Result |
+|---|---:|
+| Five-fold cross-validation ROC-AUC | 0.849855 |
+| Cross-validation ROC-AUC standard deviation | 0.012949 |
+| Held-out test ROC-AUC | 0.8468 |
+| Test accuracy | 0.7984 |
+| Test precision | 0.6562 |
+| Test recall | 0.5053 |
+| Test F1-score | 0.5710 |
+
+The cross-validation and held-out test ROC-AUC values are similar, indicating comparable discrimination performance across these evaluations. These results do not guarantee the same performance on new customers or different populations.
+
+## Training-Serving Parity
+
+The serving encoder converts raw customer information into the 30 feature columns expected by the trained model.
+
+The parity test compared training-time and serving-time predicted churn probabilities for all 7,043 customers.
+
+- **Largest absolute probability difference:** 0.0
+- **Result:** Parity test passed.
+
+This confirms matching predictions for the tested dataset and encoding workflow.
+
+## What-If Analysis
+
+For one selected high-risk customer, the baseline predicted churn probability was **89.6%**.
+
+| Scenario | Predicted churn | Change from baseline |
+|---|---:|---:|
+| Baseline | 89.6% | — |
+| One-year contract | 81.9% | -7.7 percentage points |
+| Two-year contract | 64.4% | -25.1 percentage points |
+| Automatic credit-card payment | 86.0% | -3.6 percentage points |
+
+These are model-based scenario comparisons, not causal effects. Changing a customer's contract or payment method does not guarantee reduced churn.
+
+## Technology Stack
+
+- Python
+- Pandas and NumPy
+- Scikit-learn
+- XGBoost
+- Joblib
+- Streamlit
+- GitHub
+- Streamlit Community Cloud
+
+## Repository Structure
+
+```text
+churn-risk-advisor/
+├── app.py
+├── requirements.txt
+├── churn_model.joblib
+├── model_meta.json
+├── sample_customers.csv
+└── README.md
+```
+
+## Run Locally
+
+Python and the required packages must be installed to run the application locally.
+
+1. Clone this repository.
+2. Install the dependencies.
+3. Start the Streamlit application.
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd churn-risk-advisor
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+## Deployment
+
+**Live application:** Add your public Streamlit Community Cloud URL here after deployment.
+
+The app loads the saved model and metadata from the repository. Streamlit Community Cloud installs dependencies using `requirements.txt`.
+
+## Intended Use
+
+The application is intended to support telecom retention teams in prioritizing customers for further review. It is a decision-support tool, not an automated decision-maker.
+
+## Limitations and Responsible Use
+
+- The model learns patterns from historical data and may not generalize to every population.
+- The dataset may not represent telecom customers in Pakistan or other markets.
+- Customer behavior and service plans can change, causing model performance to drift.
+- Predictions and what-if comparisons do not establish causation.
+- Customer data should be handled responsibly, and predictions should be reviewed by humans.
+
+## Week 4 Learning Outcomes
+
+- Packaged a trained machine learning model for inference.
+- Implemented a serving-time feature encoder.
+- Tested training-serving parity on 7,043 customers.
+- Explored customer scenarios through what-if analysis.
+- Prepared model metadata and sample batch data.
+- Built a Streamlit application for individual and batch predictions.
+- Documented model performance, intended use, and limitations.
+
+## Project Status
+
+The application code and supporting files have been prepared. Public deployment and end-to-end testing should be marked complete only after the deployed app has been opened and tested successfully.
